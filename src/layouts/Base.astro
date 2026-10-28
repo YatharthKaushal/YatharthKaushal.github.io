@@ -1,0 +1,30 @@
+---
+import '../styles/global.css';
+import { site } from '../site.config';
+import Scrollbar from '../components/Scrollbar.astro';
+import Seo from '../components/Seo.astro';
+import type { SeoProps } from '../lib/seo';
+
+type Props = SeoProps;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#000000" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <Seo {...Astro.props} />
+  </head>
+  <body>
+    <main>
+      <slot />
+      <footer>© {new Date().getFullYear()} {site.signature}</footer>
+    </main>
+    <Scrollbar />
+  </body>
+</html>

@@ -1,0 +1,46 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { ogImageFor, postDescription, postLd, readingMinutes } from '../../lib/seo';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const { title, date, updated, tags, coverAlt, canonical, noindex } = post.data;
+const fmt = (d: Date) => d.toISOString().slice(0, 10);
+---
+
+<Base
+  title={title}
+  description={postDescription(post)}
+  image={ogImageFor(post)}
+  imageAlt={coverAlt}
+  canonical={canonical}
+  noindex={noindex}
+  type="article"
+  published={date}
+  modified={updated ?? date}
+  tags={tags}
+  jsonLd={postLd(post)}
+>
+  <Breadcrumbs title={title} />
+  <article>
+    <header class="post-header">
+      <h1>{title}</h1>
+      <p class="muted mono">
+        <time datetime={date.toISOString()}>{fmt(date)}</time>
+        {updated && <> · updated <time datetime={updated.toISOString()}>{fmt(updated)}</time></>}
+        {' · '}{readingMinutes(post.body)} min read
+        {tags.length > 0 && <span class="tags">{tags.map((t) => <span>#{t}</span>)}</span>}
+      </p>
+    </header>
+    <div class="prose">
+      <Content />
+    </div>
+  </article>
+</Base>

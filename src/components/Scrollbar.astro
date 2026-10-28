@@ -1,0 +1,76 @@
+---
+// Custom page scrollbar. The native one is hidden in global.css; this draws
+// a thin overlay thumb that follows window scroll and can be dragged.
+---
+
+<div class="scrollbar" aria-hidden="true">
+  <div class="scrollbar-thumb"></div>
+</div>
+
+<script>
+  const track = document.querySelector<HTMLElement>('.scrollbar')!;
+  const thumb = track.querySelector<HTMLElement>('.scrollbar-thumb')!;
+  const root = document.documentElement;
+  const MIN_THUMB = 32;
+  let hideTimer: number | undefined;
+  let dragStartY = 0;
+  let dragStartScroll = 0;
+
+  function metrics() {
+    const viewH = window.innerHeight;
+    const docH = root.scrollHeight;
+    const trackH = track.clientHeight;
+    const thumbH = Math.max(MIN_THUMB, (viewH / docH) * trackH);
+    return { viewH, docH, trackH, thumbH, maxScroll: docH - viewH, maxThumb: trackH - thumbH };
+  }
+
+  function update() {
+    const m = metrics();
+    track.classList.toggle('is-hidden', m.maxScroll <= 1);
+    if (m.maxScroll <= 1) return;
+    const y = (window.scrollY / m.maxScroll) * m.maxThumb;
+    thumb.style.height = `${m.thumbH}px`;
+    thumb.style.transform = `translateY(${y}px)`;
+  }
+
+  function flash() {
+    track.classList.add('is-active');
+    clearTimeout(hideTimer);
+    hideTimer = window.setTimeout(() => track.classList.remove('is-active'), 1000);
+  }
+
+  window.addEventListener('scroll', () => { update(); flash(); }, { passive: true });
+  window.addEventListener('resize', update);
+  new ResizeObserver(update).observe(document.body);
+
+  thumb.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    dragStartY = e.clientY;
+    dragStartScroll = window.scrollY;
+    thumb.setPointerCapture(e.pointerId);
+    track.classList.add('is-dragging');
+  });
+
+  thumb.addEventListener('pointermove', (e) => {
+    if (!thumb.hasPointerCapture(e.pointerId)) return;
+    const m = metrics();
+    const delta = ((e.clientY - dragStartY) / m.maxThumb) * m.maxScroll;
+    window.scrollTo(0, dragStartScroll + delta);
+  });
+
+  const endDrag = (e: PointerEvent) => {
+    if (thumb.hasPointerCapture(e.pointerId)) thumb.releasePointerCapture(e.pointerId);
+    track.classList.remove('is-dragging');
+  };
+  thumb.addEventListener('pointerup', endDrag);
+  thumb.addEventListener('pointercancel', endDrag);
+
+  // Clicking the track jumps a page toward the click, like native scrollbars.
+  track.addEventListener('pointerdown', (e) => {
+    if (e.target !== track) return;
+    const thumbTop = thumb.getBoundingClientRect().top;
+    window.scrollBy({ top: e.clientY < thumbTop ? -window.innerHeight * 0.9 : window.innerHeight * 0.9, behavior: 'smooth' });
+  });
+
+  update();
+</script>

@@ -1,0 +1,132 @@
+---
+// Reading-trail breadcrumbs: Home / Post A / Post B / Current.
+// Server renders "Home / Current"; the script below rebuilds the trail from
+// the posts the reader followed links through (kept in sessionStorage).
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<nav class="crumbs" aria-label="Breadcrumb">
+  <ol>
+    <li><a href="/">Home</a></li>
+    <li><span aria-current="page">{title}</span></li>
+  </ol>
+</nav>
+
+<script>
+  type Crumb = { path: string; title: string };
+  const KEY = 'reading-trail';
+  const MAX_VISIBLE = 4; // posts shown before collapsing the middle into "…"
+
+  const norm = (p: string) => (p.endsWith('/') ? p : p + '/');
+  const isPost = (p: string) => /^\/blog\/[^/]+\/$/.test(p);
+
+  function load(): Crumb[] {
+    try {
+      return JSON.parse(sessionStorage.getItem(KEY) || '[]');
+    } catch {
+      return [];
+    }
+  }
+
+  function save(trail: Crumb[]) {
+    try {
+      sessionStorage.setItem(KEY, JSON.stringify(trail));
+    } catch {}
+  }
+
+  function referrerPath(): string | null {
+    if (!document.referrer) return null;
+    try {
+      const u = new URL(document.referrer);
+      return u.origin === location.origin ? norm(u.pathname) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  const nav = document.querySelector<HTMLElement>('.crumbs')!;
+  const current: Crumb = {
+    path: norm(location.pathname),
+    title: nav.querySelector('[aria-current]')!.textContent || '',
+  };
+
+  let trail: Crumb[] = [];
+
+  function sync() {
+    trail = load();
+    const seenAt = trail.findIndex((c) => c.path === current.path);
+    const from = referrerPath();
+
+    if (seenAt !== -1) {
+      // Revisiting a post already in the trail (back button or a link back): cut to it.
+      trail = trail.slice(0, seenAt + 1);
+    } else if (from && isPost(from) && trail.length && trail[trail.length - 1].path === from) {
+      // Followed a link from the previous post: go one level deeper.
+      trail.push(current);
+    } else {
+      // Arrived from home, outside, or a fresh tab: start over.
+      trail = [current];
+    }
+    save(trail);
+  }
+
+  function link(c: Crumb) {
+    const a = document.createElement('a');
+    a.href = c.path;
+    a.textContent = c.title;
+    a.title = c.title;
+    return a;
+  }
+
+  function render(expanded = false) {
+    const ol = document.createElement('ol');
+    const add = (node: Node) => {
+      const li = document.createElement('li');
+      li.append(node);
+      ol.append(li);
+    };
+
+    const home = document.createElement('a');
+    home.href = '/';
+    home.textContent = 'Home';
+    add(home);
+
+    const parents = trail.slice(0, -1);
+    if (!expanded && parents.length > MAX_VISIBLE - 1) {
+      add(link(parents[0]));
+      const more = document.createElement('button');
+      more.type = 'button';
+      more.className = 'grain';
+      more.textContent = '…';
+      more.title = `Show ${parents.length - 2} more`;
+      more.addEventListener('click', () => render(true));
+      add(more);
+      add(link(parents[parents.length - 1]));
+    } else {
+      parents.forEach((c) => add(link(c)));
+    }
+
+    const here = document.createElement('span');
+    here.setAttribute('aria-current', 'page');
+    here.textContent = current.title;
+    here.title = current.title;
+    add(here);
+
+    nav.replaceChildren(ol);
+  }
+
+  sync();
+  render();
+
+  // Pages restored from the back/forward cache don't rerun scripts.
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted) {
+      sync();
+      render();
+    }
+  });
+</script>

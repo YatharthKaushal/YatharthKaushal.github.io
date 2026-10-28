@@ -1,0 +1,63 @@
+---
+// All <head> metadata for search engines, social cards and AI crawlers.
+import { site } from '../site.config';
+import { absolute, type SeoProps } from '../lib/seo';
+
+const {
+  title,
+  description = site.description,
+  image = '/og/home.png',
+  imageAlt,
+  canonical,
+  noindex = false,
+  type = 'website',
+  published,
+  modified,
+  tags = [],
+  jsonLd,
+} = Astro.props as SeoProps;
+
+const fullTitle = title ? `${title} · ${site.name}` : site.title;
+const canonicalUrl = canonical ?? absolute(Astro.url.pathname);
+const imageUrl = absolute(image);
+const alt = imageAlt ?? title ?? site.title;
+---
+
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonicalUrl} />
+<meta
+  name="robots"
+  content={noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'}
+/>
+<meta name="author" content={site.author.name} />
+{tags.length > 0 && <meta name="keywords" content={tags.join(', ')} />}
+
+<meta property="og:type" content={type} />
+<meta property="og:site_name" content={site.title} />
+<meta property="og:locale" content={site.locale} />
+<meta property="og:url" content={canonicalUrl} />
+<meta property="og:title" content={title ?? site.title} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={imageUrl} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={alt} />
+{published && <meta property="article:published_time" content={published.toISOString()} />}
+{modified && <meta property="article:modified_time" content={modified.toISOString()} />}
+{type === 'article' && <meta property="article:author" content={site.url} />}
+{tags.map((t) => <meta property="article:tag" content={t} />)}
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content={site.author.twitter} />
+<meta name="twitter:creator" content={site.author.twitter} />
+<meta name="twitter:title" content={title ?? site.title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={imageUrl} />
+<meta name="twitter:image:alt" content={alt} />
+
+<link rel="alternate" type="application/rss+xml" title={site.title} href="/rss.xml" />
+<link rel="alternate" type="text/plain" title="llms.txt" href="/llms.txt" />
+<link rel="sitemap" href="/sitemap-index.xml" />
+
+{jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}

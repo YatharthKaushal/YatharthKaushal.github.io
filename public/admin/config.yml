@@ -1,0 +1,43 @@
+backend:
+  name: github
+  repo: YatharthKaushal/YatharthKaushal.github.io
+  branch: main
+
+# Lets /admin edit local files when `npm run cms` is running
+local_backend: true
+
+media_folder: public/images
+public_folder: /images
+
+collections:
+  - name: blog
+    label: Blog
+    folder: src/content/blog
+    create: true
+    slug: '{{slug}}'
+    extension: md
+    format: frontmatter
+    sortable_fields: [date, title]
+    fields:
+      - { label: Title, name: title, widget: string, hint: 'Keep under ~60 characters so it fits in search results.' }
+      - label: Description
+        name: description
+        widget: text
+        required: false
+        hint: 'One or two sentences (70–160 chars) for search results and share cards. Leave blank to use the first paragraph.'
+      - { label: Date, name: date, widget: datetime, date_format: 'YYYY-MM-DD', time_format: false, format: 'YYYY-MM-DD' }
+      - label: Updated
+        name: updated
+        widget: datetime
+        required: false
+        date_format: 'YYYY-MM-DD'
+        time_format: false
+        format: 'YYYY-MM-DD'
+        hint: 'Set when you meaningfully revise the post.'
+      - { label: Tags, name: tags, widget: list, required: false, default: [], hint: 'Comma-separated, e.g. networking, linux' }
+      - { label: Draft, name: draft, widget: boolean, default: false }
+      - { label: Cover image, name: cover, widget: image, required: false, hint: 'Custom share image, 1200×630. Otherwise one is generated.' }
+      - { label: Cover alt text, name: coverAlt, widget: string, required: false }
+      - { label: Canonical URL, name: canonical, widget: string, required: false, hint: 'Only if this was first published elsewhere.' }
+      - { label: Hide from search engines, name: noindex, widget: boolean, default: false, required: false }
+      - { label: Body, name: body, widget: markdown }

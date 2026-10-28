@@ -1,0 +1,47 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import { site } from '../site.config';
+import { homeLd, postDescription, postPath, publishedPosts } from '../lib/seo';
+
+const posts = await publishedPosts();
+
+const fmt = (d: Date) => d.toISOString().slice(0, 10);
+---
+
+<Base jsonLd={homeLd(posts)}>
+  <header>
+    <h1 class="settle">{site.name}</h1>
+    <p class="muted settle">{site.intro}</p>
+    <ul class="links settle">
+      {site.links.map((l) => (
+        <li>
+          <a class="cta icon grain" href={l.href} aria-label={l.label} title={l.label} rel="me">
+            <Icon name={l.icon} />
+          </a>
+        </li>
+      ))}
+    </ul>
+  </header>
+
+  <section class="settle">
+    <h2>Writing</h2>
+    {posts.length === 0 ? (
+      <p class="muted">Nothing here yet.</p>
+    ) : (
+      <ul class="posts">
+        {posts.map((p) => (
+          <li>
+            <a class="post-card grain" href={postPath(p)}>
+              <div class="row">
+                <span class="title">{p.data.title}</span>
+                <time class="date" datetime={p.data.date.toISOString()}>{fmt(p.data.date)}</time>
+              </div>
+              <p class="desc">{postDescription(p)}</p>
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
+  </section>
+</Base>
