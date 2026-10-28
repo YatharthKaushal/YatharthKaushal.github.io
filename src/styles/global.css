@@ -131,6 +131,18 @@ section.settle { animation-delay: 0.24s; }
   pointer-events: none;
 }
 
+/* Justified paragraphs: both edges aligned; hyphenation keeps word gaps even.
+   Phones keep left alignment, since narrow columns open wide gaps between words. */
+@media (min-width: 560px) {
+  header > p,
+  .prose p {
+    text-align: justify;
+    text-justify: inter-word;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+  }
+}
+
 section { margin-top: 64px; }
 
 /* Post list */
