@@ -7,12 +7,19 @@ import { homeLd, postDescription, postPath, publishedPosts } from '../lib/seo';
 const posts = await publishedPosts();
 
 const fmt = (d: Date) => d.toISOString().slice(0, 10);
+
+// Link the first mention of the employer in the intro.
+const { name: org, url: orgUrl } = site.author.worksFor;
+const [introBefore, ...introRest] = site.intro.split(org);
+const introAfter = introRest.join(org);
 ---
 
 <Base jsonLd={homeLd(posts)}>
   <header>
     <h1 class="settle">{site.name}</h1>
-    <p class="muted settle">{site.intro}</p>
+    <p class="muted settle">
+      {introRest.length ? <>{introBefore}<a class="quiet-link" href={orgUrl}>{org}</a>{introAfter}</> : site.intro}
+    </p>
     <ul class="links settle">
       {site.links.map((l) => (
         <li>
