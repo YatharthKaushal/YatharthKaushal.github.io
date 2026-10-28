@@ -5,14 +5,14 @@ export const site = {
   name: 'Yatharth Kaushal',
   title: 'Yatharth Kaushal',
   signature: 'theyatharthk',
-  description: 'Engineer at Synquic. Writing on low-level systems, networking, datacenters and quant.',
+  description: 'Engineer at Synquic Labs. Writing on low-level systems, networking, datacenters and quant.',
   intro:
-    "I'm an engineer at Synquic, a small product studio, where I sit just below the founders and do whatever the problem needs: architect backends, lead project teams of 5–10, ship apps, and run product research. A couple thousand commits across health-tech, commerce, IoT and anti-counterfeiting taught me the stack is rarely the hard part. These days I build in Rust and drift toward what actually interests me: low-level systems, networking, datacenters and quant. This is where I write about it.",
+    "I'm an engineer at Synquic Labs, a small product studio, where I sit just below the founders and do whatever the problem needs: architect backends, lead project teams of 5–10, ship apps, and run product research. A couple thousand commits across health-tech, commerce, IoT and anti-counterfeiting taught me the stack is rarely the hard part. These days I build in Rust and drift toward what actually interests me: low-level systems, networking, datacenters and quant. This is where I write about it.",
   locale: 'en_US',
   author: {
     name: 'Yatharth Kaushal',
     jobTitle: 'Engineer & Project Lead',
-    worksFor: { name: 'Synquic', url: 'https://synquic.com' },
+    worksFor: { name: 'Synquic Labs', url: 'https://synquic.com' },
     twitter: '@theyatharthk',
     email: 'yatharthkaushal@proton.me',
     // Topics you want search and AI engines to associate with you
