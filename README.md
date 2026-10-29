@@ -32,14 +32,20 @@ Body in markdown...
 
 The filename becomes the URL: `/blog/my-post/`. Posts with `draft: true` are hidden.
 
-**Option 2: Rich text editor (locally).**
+**Option 2: Rich text editor (locally), with one-click publish.**
 
 ```sh
-npm run cms        # terminal 1: local CMS backend
-npm run dev        # terminal 2
+npm run cms        # starts the dev server + CMS backend + publish hook
 ```
 
-Open http://localhost:4321/admin/. The editor has a Rich Text / Markdown toggle. Saving writes the `.md` file into `src/content/blog/`. Images go to `public/images/`.
+Open http://localhost:4321/admin/. The editor has a Rich Text / Markdown toggle. Images go to `public/images/`.
+
+Clicking **Publish** (or deleting a post, or uploading an image) writes the file, then automatically:
+1. commits exactly those files, using the editor's commit message
+2. runs `npm run build` (including the SEO check)
+3. pushes to GitHub (authenticated through `gh`), and Actions deploys it about a minute later
+
+If the build fails, the commit stays local and nothing is pushed. The terminal shows why; fix the post and Publish again. Setting **Draft** keeps a post off the live site even though it's pushed. If a dev server is already running, `npm run cms` reuses it. Ctrl+C stops everything.
 
 **Option 3: Rich text editor (live site).** Push the repo to GitHub and set `backend.repo` in `public/admin/config.yml`. Then deploy:
 - **Netlify** (easiest): connect the repo, then enable Identity + Git Gateway, or use GitHub OAuth under Site settings → Access control → OAuth. `/admin` on the live site will commit posts to the repo, and Netlify rebuilds automatically.
