@@ -15,7 +15,8 @@ const orgAt = site.intro.findIndex((p) => p.includes(org));
 
 <Base jsonLd={homeLd(posts)}>
   <header>
-    <h1 class="settle">{site.name}</h1>
+    <h1 class="name settle">{site.name}</h1>
+    <p class="role settle"><span>{site.role}</span><span class="sep" aria-hidden="true"> | </span><span class="exp">{site.experience}</span></p>
     <div class="intro settle">
       {site.intro.map((para, i) => {
         if (i !== orgAt) return <p>{para}</p>;

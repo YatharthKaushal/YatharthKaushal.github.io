@@ -6,10 +6,13 @@ export const site = {
   title: 'Yatharth Kaushal',
   signature: 'theyatharthk',
   description: 'Engineer at Synquic Labs, 3+ years in the industry. Writing on low level systems, networking, datacenters and quant.',
+  // Line under the name on the home page: role | experience.
+  role: 'I am a Tech Lead',
+  experience: '3+ years',
   // One string per paragraph on the home page.
   intro: [
-    "I started out as a vibecoder and learned the rest by shipping. 3+ years into working as a developer, I'm an engineer at Synquic Labs, a small product studio, where I sit just below the founders and do whatever the problem needs: architect backends, lead project teams, ship apps, and run product research.",
-    'A couple thousand commits across health tech, commerce, IoT and anti counterfeiting taught me the stack is rarely the hard part. These days I build in Rust and drift toward what actually interests me: low level systems, networking, datacenters and quant.',
+    "I'm a founding engineer at Synquic Labs, a small product and services studio, where I sit just below the founders and do whatever the problem needs: architect backends, lead project teams, ship apps, and run product research.",
+    'A couple thousand commits across health tech, edtech, ecommerce and anti counterfeiting projects taught me the stack is rarely the hard part. These days I build in Rust and drift toward what actually interests me: low level systems, networking, datacenters and quant.',
   ],
   locale: 'en_US',
   author: {

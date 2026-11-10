@@ -61,6 +61,8 @@
   --border: #222;
   /* Pixel boxes (post cards, small buttons): flat fill, a 2px border drawn with
      shadows so each corner steps in one pixel, like the footer cat's 2px pixels */
+  /* The name's size; the line under it lines up with the Y's stem from this */
+  --name-size: clamp(2.4rem, 1.7rem + 2.6vw, 3rem);
   --px: 2px;
   --pixel-fill: #0b0b0b;
   --pixel-fill-hover: #121212;
@@ -159,7 +161,17 @@ a:hover { text-decoration-color: var(--text); }
 a.quiet-link { color: inherit; text-decoration: none; }
 
 h1, h2, h3 { font-family: var(--serif); font-weight: 400; text-wrap: balance; }
-h1 { font-size: clamp(2.4rem, 1.7rem + 2.6vw, 3rem); letter-spacing: -0.02em; line-height: 1.05; margin: 0 0 14px; }
+h1 { font-size: var(--name-size); letter-spacing: -0.02em; line-height: 1.05; margin: 0 0 14px; }
+/* Optical alignment: the Y's arms overhang its stem, so lined up box to box the name
+   looks indented. Hanging it slightly into the margin makes it look flush with the text. */
+.name { margin-left: -0.12em; }
+/* role | experience: only the role is indigo; the divider and years match the paragraphs' grey and size */
+.role .sep,
+.role .exp { color: var(--muted); font-size: 0.9375rem; /* the paragraphs' 15px; shares the baseline */ }
+.role .sep { opacity: 0.5; }
+/* The line under the name: same size as section headings, tucked close to the name.
+   Deep indigo, the darkest that stays readable on black (4.6:1). */
+.role { margin: -21px 0 4px; color: #7466d4; font-family: var(--serif); font-size: 1.5rem; line-height: 1.3; }
 h2 { font-size: 1.5rem; letter-spacing: -0.01em; line-height: 1.2; margin: 0 0 16px; }
 
 .intro p { color: var(--muted); font-size: 0.9375rem; line-height: 1.6; margin: 0 0 10px; }
@@ -202,8 +214,8 @@ section.settle { animation-delay: 0.24s; }
 .pixel-card:hover { border-image-source: var(--pixel-card-hover); }
 .pixel-card:focus-visible { border-image-source: var(--pixel-card-focus); outline: none; }
 
-/* Justified paragraphs: both edges aligned; hyphenation keeps word gaps even.
-   Phones keep left alignment, since narrow columns open wide gaps between words. */
+/* Justified paragraphs: both edges aligned. Phones keep left alignment, since narrow
+   columns open wide gaps between words. No auto hyphens: the copy avoids dashes. */
 @media (min-width: 560px) {
   .intro p,
   .prose p {
@@ -215,6 +227,8 @@ section.settle { animation-delay: 0.24s; }
 }
 
 section { margin-top: 64px; }
+/* Body copy outside the intro matches its 15px */
+section > p { font-size: 0.9375rem; }
 
 /* Post list */
 .posts { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
@@ -226,7 +240,7 @@ section { margin-top: 64px; }
 .post-card .row { display: flex; justify-content: space-between; gap: 16px; align-items: baseline; }
 .post-card .title { font-family: var(--serif); font-size: 1.2rem; font-weight: 450; line-height: 1.3; }
 .post-card .date { color: var(--muted); font-family: var(--mono); font-size: 0.8rem; white-space: nowrap; }
-.post-card .desc { color: var(--muted); font-size: 0.9rem; margin: 4px 0 0; }
+.post-card .desc { color: var(--muted); font-size: 0.9375rem; margin: 4px 0 0; }
 
 /* Article */
 /* Breadcrumbs */
@@ -277,7 +291,7 @@ section { margin-top: 64px; }
 .prose table { border-collapse: collapse; width: 100%; margin: 0 0 18px; font-size: 0.9rem; }
 .prose th, .prose td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; }
 
-footer { margin-top: 80px; color: var(--muted); font-size: 0.8rem; }
+footer { margin-top: 68px; color: var(--muted); font-size: 0.8rem; }
 
 @media (max-width: 520px) {
   main { padding-top: 48px; }
