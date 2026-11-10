@@ -1,0 +1,154 @@
+---
+// Easter egg: a tiny white pixel cat sitting on the very bottom edge of the page. It blinks now and
+// then; clicking it makes a few pixel lines burst out around its head and a red pixel
+// heart pop up above it. Drawn as crisp SVG rects from the text sprites below.
+
+// '#' body and whiskers, 'o' eyes. One character = one pixel.
+const cat = [
+  '...#.......#......',
+  '...##.....##......',
+  '...###...###......',
+  '...#########......',
+  '..###########.....',
+  '--##oo###oo##--...',
+  '..##oo###oo##.....',
+  '--#####.#####--...',
+  '...#########......',
+  '....#######.......',
+  '....#######.......',
+  '....########......',
+  '....########...#..',
+  '....########....#.',
+  '....########....#.',
+  '....#########...#.',
+  '....############..',
+  '.....###.#####....',
+];
+
+const heart = [
+  '.##.##.',
+  '#######',
+  '#######',
+  '.#####.',
+  '..###..',
+  '...#...',
+];
+
+type Rect = { x: number; y: number; w: number };
+// Merge horizontal runs of the given characters into one rect each.
+function runs(rows: string[], chars: string, dx = 0, dy = 0): Rect[] {
+  const out: Rect[] = [];
+  rows.forEach((row, y) => {
+    let x = 0;
+    while (x < row.length) {
+      if (!chars.includes(row[x])) { x++; continue; }
+      const start = x;
+      while (x < row.length && chars.includes(row[x])) x++;
+      out.push({ x: start + dx, y: y + dy, w: x - start });
+    }
+  });
+  return out;
+}
+
+const body = runs(cat, '#-');
+const eyes = runs(cat, 'o');
+// Shut: fur covers the top row of each eye, leaving a closed line below
+const lids = runs([cat[5]], 'o', 0, 5);
+// Heart floats above the head, centred on it (head centre is x = 7.5)
+const heartRects = runs(heart, '#', 4, -9);
+// Burst: four short pixel strokes around the head, each with the direction it flies
+const bursts = [
+  { px: [[0, -1], [1, 0]], dx: -1, dy: -1 },
+  { px: [[14, 0], [15, -1]], dx: 1, dy: -1 },
+  { px: [[-3, 2], [-2, 2]], dx: -1, dy: 0 },
+  { px: [[17, 2], [18, 2]], dx: 1, dy: 0 },
+];
+const P = 2; // screen pixels per sprite pixel
+---
+
+<button class="cat" type="button" aria-label="Pet the cat">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 18 18"
+    width={18 * P}
+    height={18 * P}
+    shape-rendering="crispEdges"
+    aria-hidden="true"
+  >
+    <g class="body">{body.map((r) => <rect x={r.x} y={r.y} width={r.w} height="1" />)}</g>
+    <g class="eyes">{eyes.map((r) => <rect x={r.x} y={r.y} width={r.w} height="1" />)}</g>
+    <g class="lids">{lids.map((r) => <rect x={r.x} y={r.y} width={r.w} height="1" />)}</g>
+    <g class="burst">
+      {bursts.map((b) => (
+        <g style={`--dx:${b.dx * 3}px;--dy:${b.dy * 3}px`}>
+          {b.px.map(([x, y]) => <rect x={x} y={y} width="1" height="1" />)}
+        </g>
+      ))}
+    </g>
+    <g class="heart">{heartRects.map((r) => <rect x={r.x} y={r.y} width={r.w} height="1" />)}</g>
+  </svg>
+</button>
+
+<style>
+  .cat {
+    --fur: var(--text);
+    /* Sits on the bottom edge of the page (main stretches to at least the screen height) */
+    position: absolute;
+    left: 20px;
+    bottom: 0;
+    display: block;
+    padding: 0;
+    margin: 0;
+    background: none;
+    border: 0;
+    border-radius: 4px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .cat:hover { --fur: #fff; }
+  .cat:focus-visible { outline: 1px solid #555; outline-offset: 4px; }
+
+  svg { display: block; overflow: visible; }
+  .body, .lids { fill: var(--fur); transition: fill 0.3s ease; }
+  .eyes { fill: #000; }
+
+  /* Blink: open almost all the time, shut for a beat, with a double blink */
+  .lids { opacity: 0; animation: blink 6s step-end infinite; }
+  @keyframes blink { 0% { opacity: 0; } 70% { opacity: 1; } 72% { opacity: 0; } 76% { opacity: 1; } 78% { opacity: 0; } }
+
+  /* While loved: eyes stay shut (content), lines burst, heart pops */
+  .cat.is-loved .lids { animation: none; opacity: 1; }
+
+  .burst { fill: #bdbdbd; }
+  .burst g { opacity: 0; }
+  .cat.is-loved .burst g { animation: burst 0.5s steps(3, end) forwards; }
+  @keyframes burst {
+    0% { opacity: 1; transform: none; }
+    100% { opacity: 0; transform: translate(var(--dx), var(--dy)); }
+  }
+
+  .heart { fill: #e5484d; opacity: 0; }
+  .cat.is-loved .heart { animation: heart 1.8s steps(1, end) forwards, rise 1.8s steps(4, end) forwards; }
+  @keyframes heart { 0% { opacity: 1; } 85% { opacity: 0.5; } 92% { opacity: 0; } 100% { opacity: 0; } }
+  @keyframes rise { 0% { transform: translateY(1px); } 30% { transform: none; } 100% { transform: translateY(-2px); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .lids { animation: none; }
+    .cat.is-loved .burst g { animation: none; }
+    .cat.is-loved .heart { animation: heart 1.8s steps(1, end) forwards; }
+  }
+</style>
+
+<script>
+  for (const cat of document.querySelectorAll<HTMLButtonElement>('.cat')) {
+    let timer: number | undefined;
+    cat.addEventListener('click', () => {
+      // Restart the animations on every click
+      cat.classList.remove('is-loved');
+      void cat.offsetWidth;
+      cat.classList.add('is-loved');
+      clearTimeout(timer);
+      timer = window.setTimeout(() => cat.classList.remove('is-loved'), 1900);
+    });
+  }
+</script>

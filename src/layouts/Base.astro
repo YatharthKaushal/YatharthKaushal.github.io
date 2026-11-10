@@ -1,8 +1,8 @@
 ---
-import '@fontsource-variable/newsreader/opsz.css';
 import '../styles/global.css';
 import { site } from '../site.config';
 import Scrollbar from '../components/Scrollbar.astro';
+import Cat from '../components/Cat.astro';
 import Seo from '../components/Seo.astro';
 import type { SeoProps } from '../lib/seo';
 
@@ -16,6 +16,9 @@ type Props = SeoProps;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="dark" />
     <meta name="theme-color" content="#000000" />
+    <link rel="preload" href="/fonts/newsreader.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/plex-sans.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/plex-mono.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -25,6 +28,7 @@ type Props = SeoProps;
     <main>
       <slot />
       <footer>© {new Date().getFullYear()} {site.signature}</footer>
+      <Cat />
     </main>
     <Scrollbar />
   </body>

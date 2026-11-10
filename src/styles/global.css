@@ -1,3 +1,55 @@
+/* Newsreader (OFL), self-hosted and preloaded in Base.astro so it is ready at first paint. */
+@font-face {
+  font-family: 'Newsreader';
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url('/fonts/newsreader.woff2') format('woff2-variations'), url('/fonts/newsreader.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* IBM Plex Sans + Mono (OFL) for body text, dates and code. Self-hosted; roman and mono are preloaded too. */
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: normal;
+  font-weight: 100 700;
+  font-display: swap;
+  src: url('/fonts/plex-sans.woff2') format('woff2-variations'), url('/fonts/plex-sans.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'IBM Plex Sans';
+  font-style: italic;
+  font-weight: 100 700;
+  font-display: swap;
+  src: url('/fonts/plex-sans-italic.woff2') format('woff2-variations'), url('/fonts/plex-sans-italic.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/plex-mono.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* While a font is still loading, fallbacks scaled to the real font's size stand in, so the swap doesn't resize text. */
+@font-face {
+  font-family: 'Newsreader Fallback';
+  src: local('Times New Roman'), local('TimesNewRomanPSMT'), local('Liberation Serif'), local('Tinos');
+  size-adjust: 107%;
+  ascent-override: 68.7%;
+  descent-override: 24.8%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'IBM Plex Sans Fallback';
+  src: local('Arial'), local('ArialMT'), local('Liberation Sans'), local('Arimo');
+  size-adjust: 103.2%;
+  ascent-override: 99.3%;
+  descent-override: 26.6%;
+  line-gap-override: 0%;
+}
+
 :root {
   --bg: #000;
   --text: #ecebe6;
@@ -7,17 +59,30 @@
   --cta: #1c1c1c;
   --cta-hover: #262626;
   --border: #222;
-  /* Lit surfaces: a soft light falloff from the top-left corner + fine grain */
-  --card-bg: radial-gradient(130% 160% at 0% 0%, #222 0%, #121212 45%, #0a0a0a 100%);
-  --card-bg-hover: radial-gradient(130% 160% at 0% 0%, #2a2a2a 0%, #161616 45%, #0c0c0c 100%);
-  --cta-bg: radial-gradient(140% 140% at 0% 0%, #2a2a2a 0%, #161616 60%, #101010 100%);
-  --cta-bg-hover: radial-gradient(140% 140% at 0% 0%, #343434 0%, #1c1c1c 60%, #131313 100%);
-  --grain: 0.35; /* raise for more texture */
-  --grain-img: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='2.5 0 0 0 -0.75 2.5 0 0 0 -0.75 2.5 0 0 0 -0.75 0 0 0 0 1'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  /* Pixel boxes (post cards, small buttons): flat fill, a 2px border drawn with
+     shadows so each corner steps in one pixel, like the footer cat's 2px pixels */
+  --px: 2px;
+  --pixel-fill: #0b0b0b;
+  --pixel-fill-hover: #121212;
+  --pixel-line: #262626;
+  --pixel-line-hover: #404040;
+  /* Post cards: the same idea with a two-step corner, as a 7x7 pixel image sliced 9 ways
+     (3 cells of corner, each cell = --cell). Colours match the tokens above. */
+  --pixel-card: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='7' height='7' shape-rendering='crispEdges'><rect x='2' y='0' width='1' height='1' fill='%23262626'/><rect x='3' y='0' width='1' height='1' fill='%23262626'/><rect x='4' y='0' width='1' height='1' fill='%23262626'/><rect x='1' y='1' width='1' height='1' fill='%23262626'/><rect x='2' y='1' width='1' height='1' fill='%230b0b0b'/><rect x='3' y='1' width='1' height='1' fill='%230b0b0b'/><rect x='4' y='1' width='1' height='1' fill='%230b0b0b'/><rect x='5' y='1' width='1' height='1' fill='%23262626'/><rect x='0' y='2' width='1' height='1' fill='%23262626'/><rect x='1' y='2' width='1' height='1' fill='%230b0b0b'/><rect x='2' y='2' width='1' height='1' fill='%230b0b0b'/><rect x='3' y='2' width='1' height='1' fill='%230b0b0b'/><rect x='4' y='2' width='1' height='1' fill='%230b0b0b'/><rect x='5' y='2' width='1' height='1' fill='%230b0b0b'/><rect x='6' y='2' width='1' height='1' fill='%23262626'/><rect x='0' y='3' width='1' height='1' fill='%23262626'/><rect x='1' y='3' width='1' height='1' fill='%230b0b0b'/><rect x='2' y='3' width='1' height='1' fill='%230b0b0b'/><rect x='3' y='3' width='1' height='1' fill='%230b0b0b'/><rect x='4' y='3' width='1' height='1' fill='%230b0b0b'/><rect x='5' y='3' width='1' height='1' fill='%230b0b0b'/><rect x='6' y='3' width='1' height='1' fill='%23262626'/><rect x='0' y='4' width='1' height='1' fill='%23262626'/><rect x='1' y='4' width='1' height='1' fill='%230b0b0b'/><rect x='2' y='4' width='1' height='1' fill='%230b0b0b'/><rect x='3' y='4' width='1' height='1' fill='%230b0b0b'/><rect x='4' y='4' width='1' height='1' fill='%230b0b0b'/><rect x='5' y='4' width='1' height='1' fill='%230b0b0b'/><rect x='6' y='4' width='1' height='1' fill='%23262626'/><rect x='1' y='5' width='1' height='1' fill='%23262626'/><rect x='2' y='5' width='1' height='1' fill='%230b0b0b'/><rect x='3' y='5' width='1' height='1' fill='%230b0b0b'/><rect x='4' y='5' width='1' height='1' fill='%230b0b0b'/><rect x='5' y='5' width='1' height='1' fill='%23262626'/><rect x='2' y='6' width='1' height='1' fill='%23262626'/><rect x='3' y='6' width='1' height='1' fill='%23262626'/><rect x='4' y='6' width='1' height='1' fill='%23262626'/></svg>");
+  --pixel-card-hover: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='7' height='7' shape-rendering='crispEdges'><rect x='2' y='0' width='1' height='1' fill='%23404040'/><rect x='3' y='0' width='1' height='1' fill='%23404040'/><rect x='4' y='0' width='1' height='1' fill='%23404040'/><rect x='1' y='1' width='1' height='1' fill='%23404040'/><rect x='2' y='1' width='1' height='1' fill='%23121212'/><rect x='3' y='1' width='1' height='1' fill='%23121212'/><rect x='4' y='1' width='1' height='1' fill='%23121212'/><rect x='5' y='1' width='1' height='1' fill='%23404040'/><rect x='0' y='2' width='1' height='1' fill='%23404040'/><rect x='1' y='2' width='1' height='1' fill='%23121212'/><rect x='2' y='2' width='1' height='1' fill='%23121212'/><rect x='3' y='2' width='1' height='1' fill='%23121212'/><rect x='4' y='2' width='1' height='1' fill='%23121212'/><rect x='5' y='2' width='1' height='1' fill='%23121212'/><rect x='6' y='2' width='1' height='1' fill='%23404040'/><rect x='0' y='3' width='1' height='1' fill='%23404040'/><rect x='1' y='3' width='1' height='1' fill='%23121212'/><rect x='2' y='3' width='1' height='1' fill='%23121212'/><rect x='3' y='3' width='1' height='1' fill='%23121212'/><rect x='4' y='3' width='1' height='1' fill='%23121212'/><rect x='5' y='3' width='1' height='1' fill='%23121212'/><rect x='6' y='3' width='1' height='1' fill='%23404040'/><rect x='0' y='4' width='1' height='1' fill='%23404040'/><rect x='1' y='4' width='1' height='1' fill='%23121212'/><rect x='2' y='4' width='1' height='1' fill='%23121212'/><rect x='3' y='4' width='1' height='1' fill='%23121212'/><rect x='4' y='4' width='1' height='1' fill='%23121212'/><rect x='5' y='4' width='1' height='1' fill='%23121212'/><rect x='6' y='4' width='1' height='1' fill='%23404040'/><rect x='1' y='5' width='1' height='1' fill='%23404040'/><rect x='2' y='5' width='1' height='1' fill='%23121212'/><rect x='3' y='5' width='1' height='1' fill='%23121212'/><rect x='4' y='5' width='1' height='1' fill='%23121212'/><rect x='5' y='5' width='1' height='1' fill='%23404040'/><rect x='2' y='6' width='1' height='1' fill='%23404040'/><rect x='3' y='6' width='1' height='1' fill='%23404040'/><rect x='4' y='6' width='1' height='1' fill='%23404040'/></svg>");
+  --pixel-card-focus: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='7' height='7' shape-rendering='crispEdges'><rect x='2' y='0' width='1' height='1' fill='%23777777'/><rect x='3' y='0' width='1' height='1' fill='%23777777'/><rect x='4' y='0' width='1' height='1' fill='%23777777'/><rect x='1' y='1' width='1' height='1' fill='%23777777'/><rect x='2' y='1' width='1' height='1' fill='%23121212'/><rect x='3' y='1' width='1' height='1' fill='%23121212'/><rect x='4' y='1' width='1' height='1' fill='%23121212'/><rect x='5' y='1' width='1' height='1' fill='%23777777'/><rect x='0' y='2' width='1' height='1' fill='%23777777'/><rect x='1' y='2' width='1' height='1' fill='%23121212'/><rect x='2' y='2' width='1' height='1' fill='%23121212'/><rect x='3' y='2' width='1' height='1' fill='%23121212'/><rect x='4' y='2' width='1' height='1' fill='%23121212'/><rect x='5' y='2' width='1' height='1' fill='%23121212'/><rect x='6' y='2' width='1' height='1' fill='%23777777'/><rect x='0' y='3' width='1' height='1' fill='%23777777'/><rect x='1' y='3' width='1' height='1' fill='%23121212'/><rect x='2' y='3' width='1' height='1' fill='%23121212'/><rect x='3' y='3' width='1' height='1' fill='%23121212'/><rect x='4' y='3' width='1' height='1' fill='%23121212'/><rect x='5' y='3' width='1' height='1' fill='%23121212'/><rect x='6' y='3' width='1' height='1' fill='%23777777'/><rect x='0' y='4' width='1' height='1' fill='%23777777'/><rect x='1' y='4' width='1' height='1' fill='%23121212'/><rect x='2' y='4' width='1' height='1' fill='%23121212'/><rect x='3' y='4' width='1' height='1' fill='%23121212'/><rect x='4' y='4' width='1' height='1' fill='%23121212'/><rect x='5' y='4' width='1' height='1' fill='%23121212'/><rect x='6' y='4' width='1' height='1' fill='%23777777'/><rect x='1' y='5' width='1' height='1' fill='%23777777'/><rect x='2' y='5' width='1' height='1' fill='%23121212'/><rect x='3' y='5' width='1' height='1' fill='%23121212'/><rect x='4' y='5' width='1' height='1' fill='%23121212'/><rect x='5' y='5' width='1' height='1' fill='%23777777'/><rect x='2' y='6' width='1' height='1' fill='%23777777'/><rect x='3' y='6' width='1' height='1' fill='%23777777'/><rect x='4' y='6' width='1' height='1' fill='%23777777'/></svg>");
+  /* Link bar: a single-step notch at each corner (3px), as the outer edge for clip-path */
+  --pixel-corners: polygon(
+    0 3px, 3px 3px, 3px 0,
+    calc(100% - 3px) 0, calc(100% - 3px) 3px, 100% 3px,
+    100% calc(100% - 3px), calc(100% - 3px) calc(100% - 3px), calc(100% - 3px) 100%,
+    3px 100%, 3px calc(100% - 3px), 0 calc(100% - 3px)
+  );
   /* Headings and the name: a sharp editorial serif, close to the one Claude uses */
-  --serif: 'Newsreader Variable', 'Tiempos Headline', Georgia, 'Times New Roman', serif;
-  --sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  --mono: ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+  --serif: 'Newsreader', 'Newsreader Fallback', Georgia, serif;
+  --sans: 'IBM Plex Sans', 'IBM Plex Sans Fallback', ui-sans-serif, system-ui, sans-serif;
+  /* Courier New and Liberation Mono share Plex Mono's character width, so the swap doesn't reflow */
+  --mono: 'IBM Plex Mono', 'Liberation Mono', 'Courier New', ui-monospace, monospace;
   color-scheme: dark;
 }
 
@@ -65,6 +130,11 @@ html::-webkit-scrollbar { display: none; }
 *::-webkit-scrollbar-thumb:hover { background: #555; }
 
 body {
+  /* main fills at least the screen, so the footer cat sits on the true bottom edge */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100svh;
   margin: 0;
   background: var(--bg);
   color: var(--text);
@@ -75,6 +145,9 @@ body {
 }
 
 main {
+  position: relative;
+  flex: 1 0 auto;
+  width: 100%;
   max-width: 680px;
   margin: 0 auto;
   padding: 72px 20px 96px;
@@ -86,30 +159,15 @@ a:hover { text-decoration-color: var(--text); }
 a.quiet-link { color: inherit; text-decoration: none; }
 
 h1, h2, h3 { font-family: var(--serif); font-weight: 400; text-wrap: balance; }
-h1 { font-size: clamp(2.4rem, 1.7rem + 2.6vw, 3rem); letter-spacing: -0.02em; line-height: 1.05; margin: 0 0 24px; }
+h1 { font-size: clamp(2.4rem, 1.7rem + 2.6vw, 3rem); letter-spacing: -0.02em; line-height: 1.05; margin: 0 0 14px; }
 h2 { font-size: 1.5rem; letter-spacing: -0.01em; line-height: 1.2; margin: 0 0 16px; }
 
-.intro p { color: var(--muted); margin: 0 0 14px; }
+.intro p { color: var(--muted); font-size: 0.9375rem; line-height: 1.6; margin: 0 0 10px; }
 .intro p:last-child { margin-bottom: 0; }
 
 .muted { color: var(--muted); }
 .mono { font-family: var(--mono); font-size: 0.85em; }
 
-/* Links row */
-.links { display: flex; flex-wrap: wrap; gap: 8px; margin: 24px 0 0; padding: 0; list-style: none; }
-.cta {
-  display: inline-block;
-  padding: 6px 12px;
-  background: var(--cta-bg);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  color: var(--text);
-  font-size: 0.875rem;
-  text-decoration: none;
-}
-.cta:hover { background: var(--cta-bg-hover); }
-.cta.icon { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; padding: 0; color: var(--muted); }
-.cta.icon:hover { color: var(--text); }
 
 /* First-load entrance: content settles down into place */
 @keyframes settle {
@@ -124,20 +182,25 @@ section.settle { animation-delay: 0.24s; }
   .settle { animation: none; }
 }
 
-/* Grain: a noise layer blended into the background, below the content */
-.grain { position: relative; isolation: isolate; }
-.grain::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: inherit;
-  background-image: var(--grain-img);
-  background-size: 200px 200px;
-  mix-blend-mode: soft-light;
-  opacity: var(--grain);
-  pointer-events: none;
+/* Pixel box: see the --px tokens. The border sits outside the box, so give it --px of margin. */
+.pixel {
+  --line: var(--pixel-line);
+  background: var(--pixel-fill);
+  box-shadow:
+    0 calc(-1 * var(--px)) 0 0 var(--line),
+    0 var(--px) 0 0 var(--line),
+    calc(-1 * var(--px)) 0 0 0 var(--line),
+    var(--px) 0 0 0 var(--line);
 }
+.pixel:hover { --line: var(--pixel-line-hover); background: var(--pixel-fill-hover); }
+.pixel:focus-visible { --line: #777; outline: none; }
+.pixel-card {
+  --cell: 3px; /* a bit chunkier than --px so the corner steps read at a glance */
+  border: calc(3 * var(--cell)) solid transparent;
+  border-image: var(--pixel-card) 3 fill / calc(3 * var(--cell)) stretch;
+}
+.pixel-card:hover { border-image-source: var(--pixel-card-hover); }
+.pixel-card:focus-visible { border-image-source: var(--pixel-card-focus); outline: none; }
 
 /* Justified paragraphs: both edges aligned; hyphenation keeps word gaps even.
    Phones keep left alignment, since narrow columns open wide gaps between words. */
@@ -146,24 +209,20 @@ section.settle { animation-delay: 0.24s; }
   .prose p {
     text-align: justify;
     text-justify: inter-word;
-    hyphens: auto;
-    -webkit-hyphens: auto;
+    hyphens: manual;
+    -webkit-hyphens: manual;
   }
 }
 
 section { margin-top: 64px; }
 
 /* Post list */
-.posts { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.posts { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
 .post-card {
   display: block;
-  padding: 14px 16px;
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  padding: 5px 7px; /* plus the 9px pixel border */
   text-decoration: none;
 }
-.post-card:hover { background: var(--card-bg-hover); }
 .post-card .row { display: flex; justify-content: space-between; gap: 16px; align-items: baseline; }
 .post-card .title { font-family: var(--serif); font-size: 1.2rem; font-weight: 450; line-height: 1.3; }
 .post-card .date { color: var(--muted); font-family: var(--mono); font-size: 0.8rem; white-space: nowrap; }
@@ -184,16 +243,15 @@ section { margin-top: 64px; }
 .crumbs a:hover { color: var(--text); }
 .crumbs [aria-current] { color: var(--text); }
 .crumbs button {
+  margin: 0 var(--px);
   padding: 0 6px;
-  background: var(--cta-bg);
-  border: 1px solid var(--border);
-  border-radius: 4px;
+  border: 0;
   color: var(--muted);
   font: inherit;
   line-height: 1.4;
   cursor: pointer;
 }
-.crumbs button:hover { background: var(--cta-bg-hover); color: var(--text); }
+.crumbs button:hover { color: var(--text); }
 .post-header { margin: 32px 0 40px; }
 .post-header h1 { font-size: clamp(2rem, 1.5rem + 2vw, 2.5rem); line-height: 1.12; margin-bottom: 14px; }
 .tags { display: inline-flex; gap: 8px; margin-left: 8px; }

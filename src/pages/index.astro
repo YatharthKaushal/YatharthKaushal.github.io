@@ -1,6 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import Icon from '../components/Icon.astro';
+import SocialLinks from '../components/SocialLinks.astro';
 import { site } from '../site.config';
 import { homeLd, postDescription, postPath, publishedPosts } from '../lib/seo';
 
@@ -23,15 +23,7 @@ const orgAt = site.intro.findIndex((p) => p.includes(org));
         return <p>{before}<a class="quiet-link" href={orgUrl}>{org}</a>{rest.join(org)}</p>;
       })}
     </div>
-    <ul class="links settle">
-      {site.links.map((l) => (
-        <li>
-          <a class="cta icon grain" href={l.href} aria-label={l.label} title={l.label} rel="me">
-            <Icon name={l.icon} />
-          </a>
-        </li>
-      ))}
-    </ul>
+    <div class="settle"><SocialLinks /></div>
   </header>
 
   <section class="settle">
@@ -42,7 +34,7 @@ const orgAt = site.intro.findIndex((p) => p.includes(org));
       <ul class="posts">
         {posts.map((p) => (
           <li>
-            <a class="post-card grain" href={postPath(p)}>
+            <a class="post-card pixel-card" href={postPath(p)}>
               <div class="row">
                 <span class="title">{p.data.title}</span>
                 <time class="date" datetime={p.data.date.toISOString()}>{fmt(p.data.date)}</time>

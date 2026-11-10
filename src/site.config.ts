@@ -5,11 +5,11 @@ export const site = {
   name: 'Yatharth Kaushal',
   title: 'Yatharth Kaushal',
   signature: 'theyatharthk',
-  description: 'Engineer at Synquic Labs, 3+ years in the industry. Writing on low-level systems, networking, datacenters and quant.',
+  description: 'Engineer at Synquic Labs, 3+ years in the industry. Writing on low level systems, networking, datacenters and quant.',
   // One string per paragraph on the home page.
   intro: [
-    "I started out as a vibecoder and learned the rest by shipping. Three-plus years into working as a developer, I'm an engineer at Synquic Labs, a small product studio, where I sit just below the founders and do whatever the problem needs: architect backends, lead project teams of 5–10, ship apps, and run product research.",
-    'A couple thousand commits across health-tech, commerce, IoT and anti-counterfeiting taught me the stack is rarely the hard part. These days I build in Rust and drift toward what actually interests me: low-level systems, networking, datacenters and quant. This is where I write about it.',
+    "I started out as a vibecoder and learned the rest by shipping. 3+ years into working as a developer, I'm an engineer at Synquic Labs, a small product studio, where I sit just below the founders and do whatever the problem needs: architect backends, lead project teams, ship apps, and run product research.",
+    'A couple thousand commits across health tech, commerce, IoT and anti counterfeiting taught me the stack is rarely the hard part. These days I build in Rust and drift toward what actually interests me: low level systems, networking, datacenters and quant.',
   ],
   locale: 'en_US',
   author: {
@@ -30,11 +30,12 @@ export const site = {
       'Product management',
     ],
   },
+  // handle: shown beside the links on hover. Email copies its address on click.
   links: [
-    { label: 'GitHub', icon: 'github', href: 'https://github.com/YatharthKaushal' },
-    { label: 'X', icon: 'x', href: 'https://x.com/theyatharthk' },
-    { label: 'LinkedIn', icon: 'linkedin', href: 'https://www.linkedin.com/in/yatharth-kaushal-7587192a6' },
-    { label: 'Email', icon: 'mail', href: 'mailto:yatharthkaushal@proton.me' },
+    { label: 'GitHub', handle: 'YatharthKaushal', icon: 'github', href: 'https://github.com/YatharthKaushal' },
+    { label: 'X', handle: '@theyatharthk', icon: 'x', href: 'https://x.com/theyatharthk' },
+    { label: 'LinkedIn', handle: 'Yatharth Kaushal', icon: 'linkedin', href: 'https://www.linkedin.com/in/yatharth-kaushal-7587192a6' },
+    { label: 'Email', handle: 'yatharthkaushal@proton.me', icon: 'mail', href: 'mailto:yatharthkaushal@proton.me' },
   ] as const,
 };
 

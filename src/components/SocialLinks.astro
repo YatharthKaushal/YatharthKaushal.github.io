@@ -1,0 +1,198 @@
+---
+// Profile links as one lit rail. The light follows the pointer across it, a caption
+// beside it names where each link goes, and Email copies the address on click
+// (the mailto: href stays as the fallback for no JS, modifier clicks and failed copies).
+import Icon from './Icon.astro';
+import { site } from '../site.config';
+---
+
+<div class="social">
+  <ul class="rail">
+    {site.links.map((l) => (
+      <li>
+        <a
+          href={l.href}
+          rel="me"
+          aria-label={l.icon === 'mail' ? `${l.label}: copy ${l.handle}` : `${l.label}: ${l.handle}`}
+          data-label={l.label}
+          data-handle={l.handle}
+          data-copy={l.icon === 'mail' ? l.handle : undefined}
+        >
+          <Icon name={l.icon} class="glyph" />
+          {l.icon === 'mail' && (
+            <svg class="check" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M5 12l5 5l10 -10" />
+            </svg>
+          )}
+        </a>
+      </li>
+    ))}
+  </ul>
+  <p class="caption" aria-hidden="true"><span class="label"></span> <span class="handle"></span></p>
+  <span class="sr-only" role="status"></span>
+</div>
+
+<style>
+  @property --lx { syntax: '<percentage>'; inherits: false; initial-value: 0%; }
+  @property --ly { syntax: '<percentage>'; inherits: false; initial-value: 0%; }
+
+  .social { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin: 24px 0 0; }
+
+  .rail {
+    --lx: 0%;
+    --ly: 0%;
+    position: relative;
+    display: flex;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    /* Pixel corners: one notched step, see --pixel-corners */
+    clip-path: var(--pixel-corners);
+    /* Soft top-down shade, plus a soft light wherever the pointer is */
+    background:
+      radial-gradient(90px circle at var(--lx) var(--ly), rgb(255 255 255 / 0.07), transparent 70%),
+      linear-gradient(#1c1c1c, #111);
+    transition: --lx 0.5s ease, --ly 0.5s ease;
+  }
+  /* The pixel outline: a 3px ring that shades top to bottom like the fill, staying one
+     step lighter than whatever is behind it. Drawn over the segments so hover fills
+     don't cover it; the clip-path above notches its corners. */
+  .rail::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    padding: 3px;
+    background: linear-gradient(#323232, #1e1e1e);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+    pointer-events: none;
+  }
+  .rail.is-lit { transition: none; }
+
+  .rail li { position: relative; }
+  /* Short dividers that fade out at both ends */
+  .rail li + li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 9px;
+    bottom: 9px;
+    width: 1px;
+    background: linear-gradient(transparent, #333 30%, #333 70%, transparent);
+  }
+
+  .rail a {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 38px;
+    color: var(--muted);
+    text-decoration: none;
+    outline: none;
+    transition: color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .rail a:hover,
+  .rail a:focus-visible { color: var(--text); background-color: rgb(255 255 255 / 0.03); }
+  .rail a:focus-visible { box-shadow: inset 0 0 0 1px #555; }
+  /* Pressed: the segment sinks */
+  .rail a:active { background-color: rgb(0 0 0 / 0.3); box-shadow: inset 0 1px 3px rgb(0 0 0 / 0.7); }
+
+  /* Icon.astro renders outside this component's scope, hence :global */
+  .rail :global(svg) { grid-area: 1 / 1; transition: transform 0.12s ease, opacity 0.15s ease; }
+  .rail a:active :global(svg) { transform: scale(0.9); }
+
+  /* Email: the envelope gives way to a check while "Copied" shows */
+  .rail .check { opacity: 0; transform: scale(0.6); }
+  .rail a.is-copied :global(.glyph) { opacity: 0; transform: scale(0.6); }
+  .rail a.is-copied .check { opacity: 1; transform: none; }
+
+  .caption {
+    margin: 0;
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    white-space: nowrap;
+  }
+  .caption.is-shown { opacity: 1; transform: none; }
+  .caption .label { color: var(--text); }
+  .caption .handle { color: var(--muted); font-family: var(--mono); font-size: 0.75rem; margin-left: 6px; }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rail, .rail a, .rail :global(svg), .caption { transition: none; }
+  }
+</style>
+
+<script>
+  const rail = document.querySelector<HTMLElement>('.social .rail')!;
+  const caption = document.querySelector<HTMLElement>('.social .caption')!;
+  const label = caption.querySelector<HTMLElement>('.label')!;
+  const handle = caption.querySelector<HTMLElement>('.handle')!;
+  const status = document.querySelector<HTMLElement>('.social [role="status"]')!;
+  const links = [...rail.querySelectorAll<HTMLAnchorElement>('a')];
+  let copiedTimer: number | undefined;
+
+  function show(text: string, sub: string) {
+    label.textContent = text;
+    handle.textContent = sub;
+    caption.classList.add('is-shown');
+  }
+  const hide = () => caption.classList.remove('is-shown');
+  const describe = (a: HTMLAnchorElement) => show(a.dataset.copy ? 'Copy email' : a.dataset.label!, a.dataset.handle!);
+
+  // Light follows the pointer; on leave it drifts back to the top-left corner.
+  rail.addEventListener('pointermove', (e) => {
+    if (e.pointerType !== 'mouse') return;
+    const r = rail.getBoundingClientRect();
+    rail.classList.add('is-lit');
+    rail.style.setProperty('--lx', `${((e.clientX - r.left) / r.width) * 100}%`);
+    rail.style.setProperty('--ly', `${((e.clientY - r.top) / r.height) * 100}%`);
+  });
+  rail.addEventListener('pointerleave', () => {
+    rail.classList.remove('is-lit');
+    rail.style.removeProperty('--lx');
+    rail.style.removeProperty('--ly');
+    if (!rail.contains(document.activeElement)) hide();
+  });
+
+  for (const a of links) {
+    a.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') describe(a); });
+    a.addEventListener('focus', () => { if (a.matches(':focus-visible')) describe(a); });
+    a.addEventListener('blur', hide);
+
+    const address = a.dataset.copy;
+    if (!address) continue;
+    a.addEventListener('click', async (e) => {
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || !navigator.clipboard) return;
+      e.preventDefault();
+      try {
+        await navigator.clipboard.writeText(address);
+      } catch {
+        location.href = a.href;
+        return;
+      }
+      a.classList.add('is-copied');
+      show('Copied', address);
+      status.textContent = `Copied ${address}`;
+      clearTimeout(copiedTimer);
+      copiedTimer = window.setTimeout(() => {
+        a.classList.remove('is-copied');
+        status.textContent = '';
+        if (a.matches(':hover') || a.matches(':focus-visible')) describe(a);
+        else hide();
+      }, 1800);
+    });
+  }
+</script>

@@ -100,7 +100,7 @@ const { title } = Astro.props;
       add(link(parents[0]));
       const more = document.createElement('button');
       more.type = 'button';
-      more.className = 'grain';
+      more.className = 'pixel';
       more.textContent = '…';
       more.title = `Show ${parents.length - 2} more`;
       more.addEventListener('click', () => render(true));
