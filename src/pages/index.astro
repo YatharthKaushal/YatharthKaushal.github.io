@@ -10,16 +10,19 @@ const fmt = (d: Date) => d.toISOString().slice(0, 10);
 
 // Link the first mention of the employer in the intro.
 const { name: org, url: orgUrl } = site.author.worksFor;
-const [introBefore, ...introRest] = site.intro.split(org);
-const introAfter = introRest.join(org);
+const orgAt = site.intro.findIndex((p) => p.includes(org));
 ---
 
 <Base jsonLd={homeLd(posts)}>
   <header>
     <h1 class="settle">{site.name}</h1>
-    <p class="muted settle">
-      {introRest.length ? <>{introBefore}<a class="quiet-link" href={orgUrl}>{org}</a>{introAfter}</> : site.intro}
-    </p>
+    <div class="intro settle">
+      {site.intro.map((para, i) => {
+        if (i !== orgAt) return <p>{para}</p>;
+        const [before, ...rest] = para.split(org);
+        return <p>{before}<a class="quiet-link" href={orgUrl}>{org}</a>{rest.join(org)}</p>;
+      })}
+    </div>
     <ul class="links settle">
       {site.links.map((l) => (
         <li>

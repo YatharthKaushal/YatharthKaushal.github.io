@@ -5,9 +5,12 @@ export const site = {
   name: 'Yatharth Kaushal',
   title: 'Yatharth Kaushal',
   signature: 'theyatharthk',
-  description: 'Engineer at Synquic Labs. Writing on low-level systems, networking, datacenters and quant.',
-  intro:
-    "I'm an engineer at Synquic Labs, a small product studio, where I sit just below the founders and do whatever the problem needs: architect backends, lead project teams of 5–10, ship apps, and run product research. A couple thousand commits across health-tech, commerce, IoT and anti-counterfeiting taught me the stack is rarely the hard part. These days I build in Rust and drift toward what actually interests me: low-level systems, networking, datacenters and quant. This is where I write about it.",
+  description: 'Engineer at Synquic Labs, 3+ years in the industry. Writing on low-level systems, networking, datacenters and quant.',
+  // One string per paragraph on the home page.
+  intro: [
+    "I started out as a vibecoder and learned the rest by shipping. Three-plus years into working as a developer, I'm an engineer at Synquic Labs, a small product studio, where I sit just below the founders and do whatever the problem needs: architect backends, lead project teams of 5–10, ship apps, and run product research.",
+    'A couple thousand commits across health-tech, commerce, IoT and anti-counterfeiting taught me the stack is rarely the hard part. These days I build in Rust and drift toward what actually interests me: low-level systems, networking, datacenters and quant. This is where I write about it.',
+  ],
   locale: 'en_US',
   author: {
     name: 'Yatharth Kaushal',

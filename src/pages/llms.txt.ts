@@ -9,7 +9,7 @@ export async function GET() {
     '',
     `> ${site.description}`,
     '',
-    site.intro,
+    site.intro.join('\n\n'),
     '',
     `Author: ${site.author.name} (${site.author.jobTitle}). Topics: ${site.author.knowsAbout.join(', ')}.`,
     '',
